@@ -1,0 +1,45 @@
+# OSX's pkgutil completion                                  -*- shell-script -*-
+#
+# Copyright (c) 2015 [Adam Strzelecki](http://www.nanoant.com)
+# 
+# Distributed under the [MIT License](http://creativecommons.org/licenses/MIT/)
+
+_pkgutil()
+{
+	local cur prev words cword split
+	_init_completion -s || return
+
+	case $prev in
+	--file-info|--file-info-plist|--expand|--bom|--payload-files)
+		_filedir
+		return 0
+		;;
+	--volume|--flatten)
+		_filedir -d
+		return 0
+		;;
+	--edit-pkg|--files|--lsbom|--pkg-groups|--export-plist|--verify|\
+	--repair|--pkg-info|--pkg-info-plist|--forget)
+		COMPREPLY=( $( compgen -W '$( pkgutil --pkgs )' -- "$cur" ) )
+		return 0
+		;;
+	esac
+
+	# 2nd argument
+	if [[ $cword -gt 2 ]]; then
+		case ${words[$cword-2]} in
+		--expand)  _filedir -d; return 0 ;;
+		--flatten) _filedir;    return 0 ;;
+		esac
+	fi
+
+	$split && return 0
+
+	if [[ "$cur" == -* ]]; then
+		COMPREPLY=( $( compgen -W '$( _parse_help "$1" )' -- "$cur" ) )
+		return 0
+	fi
+} &&
+complete -F _pkgutil pkgutil
+
+# ex: ts=4 sw=4 et filetype=sh
