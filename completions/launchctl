@@ -1,31 +1,4 @@
-#!bash
-#
-# git-flow-completion
-# ===================
-# 
-# Bash completion support for launchctl (mostly)
-# 
-# 
-# Installation
-# ------------
-# 
-#  1. Install this file. Either:
-# 
-#     a. Place it in a `bash-completion.d` folder:
-# 
-#        * /etc/bash-completion.d
-#        * /usr/local/etc/bash-completion.d
-#        * ~/bash-completion.d
-# 
-#     b. Or, copy it somewhere (e.g. ~/.launchctl-completion.sh) and put the following line in
-#        your .bashrc:
-# 
-#            source ~/.launchctl-completion.sh
-# 
-# 
-# 
-# The Fine Print
-# --------------
+# OSX's launchctl completion                                -*- shell-script -*-
 # 
 # Copyright (c) 2010 [Justin Hileman](http://justinhileman.com)
 # 
