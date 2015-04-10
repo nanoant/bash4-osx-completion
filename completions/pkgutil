@@ -10,16 +10,30 @@ _pkgutil()
 	_init_completion -s || return
 
 	case $prev in
-	--file-info|--file-info-plist|--expand|--bom|--payload-files)
+	--bom|\
+	--expand|\
+	--file-info-plist|\
+	--file-info|\
+	--payload-files)
 		_filedir
 		return 0
 		;;
-	--volume|--flatten)
+	--flatten|\
+	--volume)
 		_filedir -d
 		return 0
 		;;
-	--edit-pkg|--files|--lsbom|--pkg-groups|--export-plist|--verify|\
-	--repair|--pkg-info|--pkg-info-plist|--forget)
+	--edit-pkg|\
+	--export-plist|\
+	--files|\
+	--forget|\
+	--info|\
+	--lsbom|\
+	--pkg-groups|\
+	--pkg-info-plist|\
+	--pkg-info|\
+	--repair|\
+	--verify)
 		COMPREPLY=( $( compgen -W '$( pkgutil --pkgs )' -- "$cur" ) )
 		return 0
 		;;
@@ -36,7 +50,7 @@ _pkgutil()
 	$split && return 0
 
 	if [[ "$cur" == -* ]]; then
-		COMPREPLY=( $( compgen -W '$( _parse_help "$1" )' -- "$cur" ) )
+		COMPREPLY=( $( compgen -W '$( _parse_help "$1" ) --info' -- "$cur" ) )
 		return 0
 	fi
 } &&
