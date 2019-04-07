@@ -1,0 +1,48 @@
+# OSX's pkgutil completion                                  -*- shell-script -*-
+#
+# Copyright (c) 2015 [Adam Strzelecki](http://www.nanoant.com)
+# 
+# Distributed under the [MIT License](http://creativecommons.org/licenses/MIT/)
+
+_tlmgr()
+{
+	local cur prev words cword split
+	_init_completion -s || return
+
+	if [[ $cword -eq 1 ]]; then
+		COMPREPLY=( $( compgen -W '\
+		backup\
+		candidate\
+		check\
+		conf\
+		dump-tlpdb\
+		generate\
+		get-mirror\
+		gui\
+		info\
+		install\
+		option\
+		paper\
+		path\
+		pinning\
+		platform\
+		postaction\
+		recreate-tlpdb\
+		remove\
+		repository\
+		restore\
+		search\
+		uninstall\
+		update\
+		version' -- "$cur" ) )
+		return
+	fi
+
+	if [[ "$cur" == -* ]]; then
+		COMPREPLY=( $( compgen -W '$( _parse_help "$1" "${words[1]} --help" ) --help' -- "$cur" ) )
+	fi
+} &&
+complete -F _tlmgr tlmgr
+
+# ex: ts=4 sw=4 et filetype=sh
+

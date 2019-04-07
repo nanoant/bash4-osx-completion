@@ -1,0 +1,98 @@
+#!/bin/bash
+
+read -d'\0' -r _mpss_micctrl_opts <<-'END'
+	-b	--boot
+	-r	--reset
+	-S	--shutdown
+	-R	--reboot
+	-s	--status
+	-w	--wait
+	--initdefaults
+	--resetconfig
+	--resetdefaults
+	--cleanconfig
+	--useradd=
+	--userdel=
+	--passwd=
+	--groupadd=
+	--groupdel=
+	--rootdev=
+	--updatenfs
+	--addnfs=
+	--remnfs=
+	--updateusr
+	--updateramfs
+	--hostkeys=
+	--config
+	--network=
+	--addbridge=
+	--delbridge=
+	--modbridge=
+	--service=
+	--overlay=
+	--base=
+	--commondir=
+	--micdir=
+	--osimage=
+	--autoboot=
+	--pm=
+	--cgroup
+	--ldap=
+	--userupdate=
+	--rpmdir=
+	--nis=
+END
+
+_mpss_micctrl() {
+	local opts
+	local prev=${COMP_WORDS[COMP_CWORD-1]}
+	local cur=${COMP_WORDS[COMP_CWORD]}
+
+	if [[ $prev == '=' ]]; then
+		prev=${COMP_WORDS[COMP_CWORD-2]}=
+	elif [[ $cur == '=' ]]; then
+		prev=${prev}=
+		cur=
+	fi
+
+	COMPREPLY=()
+
+	case "$prev" in
+	--*dir=  | --source= | --home= ) COMPREPLY=( $(compgen -d -- ${cur}) ) ;;
+	--*file= | --target=           ) COMPREPLY=( $(compgen -d -- ${cur}) ) ;;
+
+	--overlay= ) opts='simple filelist' ;;
+	--pass=    ) opts='shadow' ;;
+	--state=   ) opts='on off delete' ;;
+	*)
+		if [ ${COMP_CWORD} -le 1 ]; then
+			opts="$_mpss_micctrl_opts"
+		elif [[ $prev != "--"*"=" ]]; then
+			case "${COMP_WORDS[1]}" in
+			-b | --boot |\
+			-r | --reset |\
+			-S | --shutdown |\
+			-R | --reboot ) opts='-w -t --wait --timeout=' ;;
+			--addnfs      ) opts='--dir=' ;;
+			--groupadd    ) opts='--gid=' ;;
+			--overlay     ) opts='--source= --target= --state=' ;;
+			--passwd      ) opts='--pass=' ;;
+			--useradd     ) opts='--uid= --gid= --home= --comment= --app= --sshkeys= --nocreate --non-unique' ;;
+			--userdel     ) opts='--remove' ;;
+			--userupdate  ) opts='--pass=' ;;
+			esac
+		fi
+	esac
+
+	if [[ ${#COMPREPLY[@]} == 0 && -n "$opts" ]]; then
+		COMPREPLY=( $(compgen -W "$opts" -- ${cur}) )
+	fi
+
+	if [[ ${#COMPREPLY[@]} == 1 && ${COMPREPLY[0]} != "--"*"=" ]] ; then
+		# If there's only one option, without =, then allow a space
+		compopt +o nospace
+	fi
+
+	return 0
+
+} && complete -o nospace -F _mpss_micctrl micctrl
